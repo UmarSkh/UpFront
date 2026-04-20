@@ -65,13 +65,20 @@ router.post('/request-otp', async (req, res) => {
 
     // In dev: if email not delivered, return the OTP directly so UI can show it
     const isDev = process.env.NODE_ENV !== 'production';
+    
+    // TEMPORARY: Also show devOtp in production if a special ENV is set, to help debugging
+    const showOtpDebug = process.env.SHOW_OTP_DEBUG === 'true';
+
     res.json({
-      message: emailDelivered ? 'OTP sent to your email' : 'OTP generated',
-      ...(isDev && !emailDelivered ? { devOtp: otp, devNote: 'Email delivery unavailable — use this OTP directly' } : {})
+      message: emailDelivered ? 'OTP sent to your email' : 'OTP generated (Email delivery failed)',
+      ...((isDev || showOtpDebug) && !emailDelivered ? { devOtp: otp, devNote: 'Email delivery unavailable — use this OTP' } : {})
     });
   } catch (error) {
-    console.error('OTP Request Error:', error);
-    res.status(500).json({ message: 'Failed to send OTP' });
+    console.error('OTP Request Error Details:', error);
+    res.status(500).json({ 
+      message: 'Server error during OTP request', 
+      error: process.env.NODE_ENV === 'production' ? 'Internal Server Error' : error.message 
+    });
   }
 });
 
