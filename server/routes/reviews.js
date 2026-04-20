@@ -60,4 +60,14 @@ router.get('/user/:userId', async (req, res) => {
   }
 });
 
+// Check if a review exists for a task by the current user
+router.get('/check/:taskId', authMiddleware, async (req, res) => {
+  try {
+    const review = await Review.findOne({ task: req.params.taskId, reviewer: req.userId });
+    res.json({ exists: !!review, review });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to check review' });
+  }
+});
+
 module.exports = router;

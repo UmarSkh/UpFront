@@ -435,6 +435,25 @@ function ReviewSection({ task, currentUser }) {
   const [comment, setComment] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [checking, setChecking] = useState(true);
+
+  useEffect(() => {
+    const checkReview = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/reviews/check/${task._id}`, {
+          headers: { 'x-user-id': currentUser?.id }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (data.exists) setSubmitted(true);
+        }
+      } catch (err) { console.error(err); }
+      finally { setChecking(false); }
+    };
+    checkReview();
+  }, [task._id, currentUser?.id]);
+
+  if (checking) return null;
 
   const getUserId = (userObj) => {
     if (!userObj) return null;
