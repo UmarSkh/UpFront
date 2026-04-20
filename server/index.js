@@ -37,6 +37,10 @@ app.use('/api/messages', messageRoutes);
 app.use('/api/reviews', reviewRoutes);
 app.use('/api/users', userRoutes);
 
+app.get('/', (req, res) => {
+  res.send('UpFront API is running. Use /api/health to check status.');
+});
+
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', message: 'UpFront API is running' });
 });
