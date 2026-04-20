@@ -3,6 +3,7 @@ import { MapPin, ArrowRight, CheckCircle2, Clock, Coins } from 'lucide-react';
 import { io } from 'socket.io-client';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-hot-toast';
+import { API_URL } from '../config';
 
 export default function Dashboard() {
   const navigate = useNavigate();
@@ -17,7 +18,7 @@ export default function Dashboard() {
     fetchTasks();
     fetchMyTasks();
 
-    const socket = io('http://localhost:5000');
+    const socket = io(API_URL);
 
     socket.on('taskCreated', (newTask) => {
       if (!currentUser || newTask.creator._id !== currentUser.id) {
@@ -37,7 +38,7 @@ export default function Dashboard() {
 
   const fetchTasks = async () => {
     try {
-      const res = await fetch('http://localhost:5000/api/tasks', {
+      const res = await fetch(`${API_URL}/api/tasks`, {
         headers: { 'x-user-id': currentUser?.id || '' }
       });
       if (res.ok) setTasks(await res.json());
@@ -47,7 +48,7 @@ export default function Dashboard() {
   const fetchMyTasks = async () => {
     if (!currentUser?.id) return;
     try {
-      const res = await fetch('http://localhost:5000/api/tasks/me/all', {
+      const res = await fetch(`${API_URL}/api/tasks/me/all`, {
         headers: { 'x-user-id': currentUser.id }
       });
       if (res.ok) {
@@ -64,7 +65,7 @@ export default function Dashboard() {
     if (!currentUser) return navigate('/login');
 
     try {
-      const res = await fetch(`http://localhost:5000/api/tasks/${taskId}/accept`, {
+      const res = await fetch(`${API_URL}/api/tasks/${taskId}/accept`, {
         method: 'POST',
         headers: { 'x-user-id': currentUser.id }
       });

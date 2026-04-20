@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { User, Star, Shield, Award, Clock, Edit2, Check, X, Camera, ArrowUpRight, ArrowDownLeft, Wallet } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import { API_URL } from '../config';
 
 export default function Profile() {
   const [reviews, setReviews] = useState([]);
@@ -25,14 +26,14 @@ export default function Profile() {
 
   const fetchReviews = async () => {
     try {
-      const res = await fetch(`http://localhost:5000/api/reviews/user/${user.id}`);
+      const res = await fetch(`${API_URL}/api/reviews/user/${user.id}`);
       if (res.ok) setReviews(await res.json());
     } catch (err) { console.error(err); }
   };
 
   const fetchTransactions = async () => {
     try {
-      const res = await fetch(`http://localhost:5000/api/users/transactions`, {
+      const res = await fetch(`${API_URL}/api/users/transactions`, {
         headers: { 'x-user-id': user.id }
       });
       if (res.ok) setTransactions(await res.json());
@@ -42,7 +43,7 @@ export default function Profile() {
 
   const handleUpdateProfile = async () => {
     try {
-      const res = await fetch(`http://localhost:5000/api/users/profile`, {
+      const res = await fetch(`${API_URL}/api/users/profile`, {
         method: 'PUT',
         headers: { 
           'Content-Type': 'application/json',

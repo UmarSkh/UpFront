@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, ArrowRight, Clock, CheckCircle2, Coins, Search } from 'lucide-react';
+import { API_URL } from '../config';
 
 const STATUS_COLORS = {
   'Searching': 'bg-amber-100 text-amber-700',
@@ -53,7 +54,7 @@ export default function History() {
       if (!user) return setLoading(false);
 
       try {
-        const res = await fetch('http://localhost:5000/api/tasks/me/all', {
+        const res = await fetch(`${API_URL}/api/tasks/me/all`, {
           headers: { 'x-user-id': user.id }
         });
         if (res.ok) {

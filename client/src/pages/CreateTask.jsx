@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Send, MapPin, Navigation, Type, Coins } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { API_URL } from '../config';
 
 export default function CreateTask() {
   const navigate = useNavigate();
@@ -27,7 +28,7 @@ export default function CreateTask() {
         return navigate('/login');
       }
 
-      const res = await fetch('http://localhost:5000/api/tasks', {
+      const res = await fetch(`${API_URL}/api/tasks`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

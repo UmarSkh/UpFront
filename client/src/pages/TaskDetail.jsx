@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { io } from 'socket.io-client';
 import { MapPin, ArrowRight, Send, Upload, CheckCircle2, ArrowLeft, Clock, User, Home, Eye, XCircle } from 'lucide-react';
 import { toast } from 'react-hot-toast';
+import { API_URL } from '../config';
 
 const STATUS_STEPS = ['Searching', 'Matched', 'In Progress', 'Proof', 'Completed'];
 const STATUS_COLORS = {
@@ -36,7 +37,7 @@ export default function TaskDetail() {
     fetchMessages();
     fetchProofs();
 
-    const s = io('http://localhost:5000');
+    const s = io(API_URL);
     s.emit('joinRoom', id);
     s.on('newMessage', (msg) => setMessages(prev => [...prev, msg]));
     s.on('statusUpdated', ({ status }) => {
@@ -57,7 +58,7 @@ export default function TaskDetail() {
 
   const fetchTask = async () => {
     try {
-      const res = await fetch(`http://localhost:5000/api/tasks/${id}`, {
+      const res = await fetch(`${API_URL}/api/tasks/${id}`, {
         headers: { 'x-user-id': currentUser?.id || '' }
       });
       if (res.ok) setTask(await res.json());
@@ -67,7 +68,7 @@ export default function TaskDetail() {
 
   const fetchMessages = async () => {
     try {
-      const res = await fetch(`http://localhost:5000/api/messages/${id}`, {
+      const res = await fetch(`${API_URL}/api/messages/${id}`, {
         headers: { 'x-user-id': currentUser?.id || '' }
       });
       if (res.ok) setMessages(await res.json());
@@ -76,7 +77,7 @@ export default function TaskDetail() {
 
   const fetchProofs = async () => {
     try {
-      const res = await fetch(`http://localhost:5000/api/tasks/${id}/proofs`, {
+      const res = await fetch(`${API_URL}/api/tasks/${id}/proofs`, {
         headers: { 'x-user-id': currentUser?.id || '' }
       });
       if (res.ok) setProofs(await res.json());
@@ -94,7 +95,7 @@ export default function TaskDetail() {
     if (status === 'Cancelled' && !window.confirm('Are you sure you want to cancel this task? Your credits will be refunded.')) return;
     
     try {
-      const res = await fetch(`http://localhost:5000/api/tasks/${id}/status`, {
+      const res = await fetch(`${API_URL}/api/tasks/${id}/status`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json', 'x-user-id': currentUser?.id },
         body: JSON.stringify({ status })
@@ -117,7 +118,7 @@ export default function TaskDetail() {
   const handleAcceptTask = async () => {
     if (!currentUser) return navigate('/login');
     try {
-      const res = await fetch(`http://localhost:5000/api/tasks/${id}/accept`, {
+      const res = await fetch(`${API_URL}/api/tasks/${id}/accept`, {
         method: 'POST',
         headers: { 'x-user-id': currentUser.id }
       });
@@ -138,7 +139,7 @@ export default function TaskDetail() {
     formData.append('proof', proofFile);
     formData.append('type', type);
     try {
-      const res = await fetch(`http://localhost:5000/api/tasks/${id}/proof`, {
+      const res = await fetch(`${API_URL}/api/tasks/${id}/proof`, {
         method: 'POST',
         headers: { 'x-user-id': currentUser?.id },
         body: formData
@@ -444,7 +445,7 @@ function ReviewSection({ task, currentUser }) {
     
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:5000/api/reviews', {
+      const res = await fetch(`${API_URL}/api/reviews`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
