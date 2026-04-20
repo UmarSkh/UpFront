@@ -37,7 +37,13 @@ export default function TaskDetail() {
     fetchMessages();
     fetchProofs();
 
-    const s = io(API_URL);
+    const s = io(API_URL, {
+      withCredentials: true,
+      transports: ['websocket', 'polling']
+    });
+    
+    s.on('connect', () => console.log('Task Socket Connected:', s.id));
+    s.on('connect_error', (err) => console.error('Task Socket Error:', err));
     s.emit('joinRoom', id);
     s.on('newMessage', (msg) => setMessages(prev => [...prev, msg]));
     s.on('statusUpdated', ({ status }) => {

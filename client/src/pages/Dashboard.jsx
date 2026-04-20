@@ -18,7 +18,13 @@ export default function Dashboard() {
     fetchTasks();
     fetchMyTasks();
 
-    const socket = io(API_URL);
+    const socket = io(API_URL, {
+      withCredentials: true,
+      transports: ['websocket', 'polling']
+    });
+
+    socket.on('connect', () => console.log('Dashboard Socket Connected:', socket.id));
+    socket.on('connect_error', (err) => console.error('Dashboard Socket Error:', err));
 
     socket.on('taskCreated', (newTask) => {
       if (!currentUser || newTask.creator._id !== currentUser.id) {
